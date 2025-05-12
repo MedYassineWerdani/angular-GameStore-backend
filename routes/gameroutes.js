@@ -15,9 +15,38 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // Get all Games
+// router.get("/", async (req, res) => {
+//   const games = await Game.find();
+//   res.json(games);
+// });
+
+// Get all Games with Pagination
 router.get("/", async (req, res) => {
-  const games = await Game.find();
-  res.json(games);
+  const page = parseInt(req.query.page) || 1; // Default to page 1 if no page is provided
+  const pageSize = 6; // Number of games per page
+  const skip = (page - 1) * pageSize;
+
+  try {
+    // Fetch paginated games
+    const games = await Game.find().skip(skip).limit(pageSize);
+
+    // Count total number of games
+    const totalGames = await Game.countDocuments();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalGames / pageSize);
+
+    // Send response with paginated data
+    res.json({
+      games,
+      totalPages,
+      currentPage: page,
+      totalGames,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch games" });
+  }
 });
 
 // Get a Game by Slug
