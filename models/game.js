@@ -7,6 +7,11 @@ const GameSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   image: String,
   slug: { type: String, unique: true },
+  tags: [String],
+  genre: String,
+  releaseDate: Date,
+  developer: String,
+  platform: [String],
 });
 
 GameSchema.pre("save", function (next) {
